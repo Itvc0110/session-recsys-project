@@ -15,9 +15,10 @@ class Evaluator:
                 interaction = {k: v.to(model.device) for k, v in batch.items()}
                 preds = model.full_sort_predict(interaction)
                 all_preds.append(preds)
-                # Force flatten to 1D: view(-1) removes all extra dimensions
-                pos_item = interaction['pos_item'].view(-1)
-                all_labels.append(pos_item)
+                # Extract the last non-padded target per sample
+                lengths = interaction['item_seq_len']  # (batch_size,)
+                last_pos = interaction['pos_item'].gather(1, (lengths - 1).unsqueeze(1)).squeeze(1)  # (batch_size,)
+                all_labels.append(last_pos)
         preds = torch.cat(all_preds)
         labels = torch.cat(all_labels)
 
