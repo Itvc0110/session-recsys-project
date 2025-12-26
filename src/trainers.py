@@ -46,10 +46,12 @@ class Trainer:
 
     def fit(self, train_dataloader, valid_dataloader, evaluator):
         counter = 0
+        last_valid_result = None  # Store the last validation results
         for epoch in range(self.epochs):
             train_loss = self.train_epoch(train_dataloader, epoch)
-            if epoch % self.eval_step == 0:
+            if epoch % self.eval_step == 0 or epoch == self.epochs - 1:  # Also check at last epoch
                 valid_score, valid_result = self.valid_epoch(valid_dataloader, evaluator)
+                last_valid_result = valid_result  # Save the latest results
                 if valid_score > self.best_score:
                     self.best_score = valid_score
                     save_checkpoint(self.model, epoch, path='experiments/checkpoints/model.pth')
@@ -60,4 +62,5 @@ class Trainer:
                         logging.info(f"Early stopping at epoch {epoch+1}")
                         print(f"Early stopping at epoch {epoch+1}")
                         break
-        return self.best_score
+        return self.best_score, last_valid_result
+
