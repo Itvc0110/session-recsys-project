@@ -1,0 +1,4 @@
+model: 'gru4rec'
+dataset: 'ml1m'
+data_path: 'data/raw/ml-1m/ratings.dat'
+sep: '::'
