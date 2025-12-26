@@ -1,4 +1,4 @@
-from src.metrics import hit_at_k, ndcg_at_k
+from src.metrics import hit_at_k, ndcg_at_k, mrr_at_k
 import torch
 
 class Evaluator:
@@ -9,15 +9,18 @@ class Evaluator:
     def evaluate(self, dataloader, model):
         results = {}
         all_preds, all_labels = [], []
-        for batch in dataloader:
-            interaction = {k: v.to(model.device) for k, v in batch.items()}
-            preds = model.full_sort_predict(interaction)
-            all_preds.append(preds)
-            pos_item = interaction['pos_item'].view(-1)  # flatten to (batch_size,)
-            all_labels.append(pos_item)
+        model.eval()
+        with torch.no_grad():
+            for batch in dataloader:
+                interaction = {k: v.to(model.device) for k, v in batch.items()}
+                preds = model.full_sort_predict(interaction)
+                all_preds.append(preds)
+                # Force flatten to 1D: view(-1) removes all extra dimensions
+                pos_item = interaction['pos_item'].view(-1)
+                all_labels.append(pos_item)
         preds = torch.cat(all_preds)
         labels = torch.cat(all_labels)
-    
+
         # Config-driven: exact match
         for metric in self.metrics:
             if metric == 'Hit@10':
@@ -26,5 +29,5 @@ class Evaluator:
                 results[metric] = ndcg_at_k(preds, labels, self.k)
             elif metric == 'MRR@10':
                 results[metric] = mrr_at_k(preds, labels, self.k)
-    
+
         return results
