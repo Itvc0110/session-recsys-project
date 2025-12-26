@@ -28,7 +28,8 @@ def main():
 
     config['num_items'] = dataset.num_items
     model_module = importlib.import_module(f"models.{args.model}")
-    model_class = getattr(model_module, args.model.capitalize())
+    model_names = {'sasrec': 'SASRec', 'gru4rec': 'GRU4Rec'}
+    model_class = getattr(model_module, model_names[args.model])
     model = model_class(config)
     load_checkpoint(model, args.checkpoint)
 
@@ -38,5 +39,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
