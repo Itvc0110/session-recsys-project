@@ -1,0 +1,6 @@
+model: 'sasrec'
+dataset: 'ml1m'
+heads: 1  # Single-head better per paper
+inner_size: 200  # 4 * embedding_size
+data_path: 'data/raw/ml-1m/ratings.dat'
+sep: '::'
