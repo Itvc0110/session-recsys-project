@@ -1,20 +1,26 @@
 import torch
 
 def hit_at_k(preds, labels, k=10):
-    """Recall@K: fraction of relevant items in top-k."""
-    topk = torch.topk(preds, k).indices
-    return (topk == labels.unsqueeze(1)).any(1).float().mean()
+    """Hit@K: 1 if the true item is in top-k predictions."""
+    topk_indices = torch.topk(preds, k, dim=1).indices  # (batch_size, k)
+    hits = (topk_indices == labels.unsqueeze(1)).any(dim=1).float()  # (batch_size,)
+    return hits.mean()
 
 def ndcg_at_k(preds, labels, k=10):
-    """NDCG@K: normalized discounted cumulative gain."""
-    topk = torch.topk(preds, k).indices
-    ideal = torch.arange(1, k+1, dtype=torch.float, device=preds.device)
-    gains = (topk == labels.unsqueeze(1)).float() / torch.log2(ideal + 1)
-    return gains.sum(1).mean()
+    """NDCG@K with single relevant item."""
+    topk_indices = torch.topk(preds, k, dim=1).indices  # (batch_size, k)
+    relevance = (topk_indices == labels.unsqueeze(1)).float()  # (batch_size, k)
+    discounts = 1.0 / torch.log2(torch.arange(1, k+1, dtype=torch.float, device=preds.device) + 1)
+    dcg = (relevance * discounts).sum(dim=1)  # (batch_size,)
+    idcg = 1.0
+    return (dcg / idcg).mean()
 
 def mrr_at_k(preds, labels, k=10):
-    """MRR@K: mean reciprocal rank."""
-    topk = torch.topk(preds, k).indices
-    ranks = (topk == labels.unsqueeze(1)).nonzero(as_tuple=True)[1] + 1
+    """MRR@K: reciprocal rank of the first relevant item."""
+    topk_indices = torch.topk(preds, k, dim=1).indices  # (batch_size, k)
+    matches = (topk_indices == labels.unsqueeze(1)).nonzero(as_tuple=True)
+    if len(matches[1]) == 0:
+        return torch.tensor(0.0, device=preds.device)  # No hit in top-k
+    ranks = matches[1] + 1  # 1-based rank
     reciprocals = 1.0 / ranks.float()
     return reciprocals.mean()
