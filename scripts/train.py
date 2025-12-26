@@ -5,6 +5,7 @@ from data.datasets.ml1m import SequentialDataset
 from data.utils import create_dataloader
 from src.trainers import Trainer
 from src.evaluators import Evaluator
+import torch
 
 def main():
     parser = argparse.ArgumentParser()
@@ -37,4 +38,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
