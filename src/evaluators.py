@@ -9,13 +9,12 @@ class Evaluator:
     def evaluate(self, dataloader, model):
         results = {}
         all_preds, all_labels = [], []
-        model.eval()
-        with torch.no_grad():
-            for batch in dataloader:
-                interaction = {k: v.to(model.device) for k, v in batch.items()}
-                preds = model.full_sort_predict(interaction)
-                all_preds.append(preds)
-                all_labels.append(interaction['pos_item'].squeeze())
+        for batch in dataloader:
+            interaction = {k: v.to(model.device) for k, v in batch.items()}
+            preds = model.full_sort_predict(interaction)
+            all_preds.append(preds)
+            pos_item = interaction['pos_item'].view(-1)  # flatten to (batch_size,)
+            all_labels.append(pos_item)
         preds = torch.cat(all_preds)
         labels = torch.cat(all_labels)
     
