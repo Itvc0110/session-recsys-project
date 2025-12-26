@@ -17,6 +17,8 @@ def main():
     with open('configs/base.yaml', 'r') as f:
         base_config = yaml.safe_load(f)
     config.update(base_config)
+    
+    config['device'] = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     dataset = SequentialDataset(config['data_path'], config['sep'], config['max_seq_len'], config['min_interactions'])
     train_seqs, valid_seqs, test_seqs = dataset.split()
@@ -35,3 +37,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
