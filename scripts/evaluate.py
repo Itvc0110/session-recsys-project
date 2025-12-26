@@ -5,6 +5,7 @@ from data.datasets.ml1m import SequentialDataset
 from data.utils import create_dataloader
 from src.evaluators import Evaluator
 from src.helpers import load_checkpoint
+import torch
 
 def main():
     parser = argparse.ArgumentParser()
@@ -37,4 +38,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
