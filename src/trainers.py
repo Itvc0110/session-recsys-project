@@ -54,7 +54,7 @@ class Trainer:
                 last_valid_result = valid_result  # Save the latest results
                 if valid_score > self.best_score:
                     self.best_score = valid_score
-                    save_checkpoint(self.model, epoch, path='experiments/checkpoints/model.pth')
+                    save_checkpoint(self.model, epoch, path=f'experiments/checkpoints/{self.model.__class__.__name__.lower()}_model.pth')
                     counter = 0
                 else:
                     counter += 1
@@ -63,4 +63,5 @@ class Trainer:
                         print(f"Early stopping at epoch {epoch+1}")
                         break
         return self.best_score, last_valid_result
+
 
