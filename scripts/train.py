@@ -44,7 +44,12 @@ def main():
     evaluator = Evaluator(config)
     trainer = Trainer(model, config)
     best_score = trainer.fit(train_dl, valid_dl, evaluator)
-    print(f"Best {config['valid_metric']}: {best_score}")
+    print(f"Best NDCG@10: {best_score:.4f}")
+    print("All evaluation metrics on validation set (last check):")
+    print(f"Hit@10: {valid_result['Hit@10']:.4f}")
+    print(f"NDCG@10: {valid_result['NDCG@10']:.4f}")
+    print(f"MRR@10: {valid_result['MRR@10']:.4f}")
 
 if __name__ == "__main__":
     main()
+
