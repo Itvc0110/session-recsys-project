@@ -10,5 +10,5 @@ max_seq_len: 200  # SASRec paper for ML-1M
 min_interactions: 5
 loss_type: 'BPR'  # Better for ranking; with negative sampling
 eval_metrics: ['Hit@10', 'NDCG@10']
-device: 'cuda' if torch.cuda.is_available() else 'cpu'
 neg_samples: 1  # Per positive for BPR
+
