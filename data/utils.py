@@ -16,7 +16,7 @@ def pad_collate(batch, padding_value=0, num_items=None, neg_samples=1):
     for i in range(batch_size):
         for j in range(lengths[i]):
             while negs[i, j] in input_seqs[i] or negs[i, j] == targets[i][j]:
-                negs[i, j] = torch.randint(1, num_items)
+                negs[i, j] = torch.randint(1, num_items, ())
     
     return {
         'user': torch.tensor(users),
@@ -42,3 +42,4 @@ def get_attention_mask(item_seq):
     extended_attention_mask = extended_attention_mask.to(dtype=item_seq.dtype)
     extended_attention_mask = (1.0 - extended_attention_mask) * -10000.0
     return extended_attention_mask
+
