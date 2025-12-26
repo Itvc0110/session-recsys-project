@@ -13,17 +13,19 @@ class Evaluator:
         with torch.no_grad():
             for batch in dataloader:
                 interaction = {k: v.to(model.device) for k, v in batch.items()}
-                # For eval, predict on last position
-                interaction['pos_item'] = interaction['pos_item'][:, -1:]
-                interaction['neg_item'] = interaction['neg_item'][:, -1:]
                 preds = model.full_sort_predict(interaction)
                 all_preds.append(preds)
                 all_labels.append(interaction['pos_item'].squeeze())
         preds = torch.cat(all_preds)
         labels = torch.cat(all_labels)
+    
+        # Config-driven: exact match
         for metric in self.metrics:
-            if 'Hit' in metric:
+            if metric == 'Hit@10':
                 results[metric] = hit_at_k(preds, labels, self.k)
-            elif 'NDCG' in metric:
+            elif metric == 'NDCG@10':
                 results[metric] = ndcg_at_k(preds, labels, self.k)
+            elif metric == 'MRR@10':
+                results[metric] = mrr_at_k(preds, labels, self.k)
+    
         return results
