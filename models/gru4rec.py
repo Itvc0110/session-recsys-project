@@ -60,8 +60,13 @@ class GRU4Rec(BaseSequentialModel):
     def full_sort_predict(self, interaction):
         item_seq = interaction['item_seq']
         item_seq_len = interaction['item_seq_len']
-        seq_output = self.forward(item_seq, item_seq_len)
+        output = self.forward(item_seq, item_seq_len)
+        # Gather the last position output
+        seq_output = output.gather(1, (item_seq_len - 1).unsqueeze(1).unsqueeze(2).expand(-1, -1, output.size(-1))).squeeze(1)  # (batch, embed_size)
         test_items_emb = self.item_embedding.weight
         scores = torch.matmul(seq_output, test_items_emb.transpose(0, 1))
+        # Mask padding token
+        scores[:, 0] = -1e9
         return scores
+
 
