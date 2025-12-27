@@ -33,21 +33,29 @@ class GRU4Rec(BaseSequentialModel):
         item_seq_emb_dropout = self.emb_dropout(item_seq_emb)
         gru_output, _ = self.gru_layers(item_seq_emb_dropout)
         gru_output = self.dense(gru_output)
-        return self.gather_indexes(gru_output, item_seq_len - 1)
+        return gru_output
 
     def calculate_loss(self, interaction):
-        item_seq = interaction['item_seq']
-        item_seq_len = interaction['item_seq_len']
-        pos_items = interaction['pos_item'][:, -1]
-        neg_items = interaction['neg_item'][:, -1]
-        seq_output = self.forward(item_seq, item_seq_len)
-
-        pos_emb = self.item_embedding(pos_items)
-        neg_emb = self.item_embedding(neg_items)
-        pos_score = (seq_output * pos_emb).sum(-1)
-        neg_score = (seq_output * neg_emb).sum(-1)
-        loss = -torch.log(torch.sigmoid(pos_score - neg_score)).mean()
-        return loss
+        item_seq = interaction['item_seq']  # (batch, seq_len)
+        item_seq_len = interaction['item_seq_len']  # (batch,)
+        pos_item = interaction['pos_item']  # (batch, seq_len)
+        neg_item = interaction['neg_item']  # (batch, seq_len)
+    
+        output = self.forward(item_seq, item_seq_len)  # (batch, seq_len, embed_size)
+        pos_emb = self.item_embedding(pos_item)  # (batch, seq_len, embed_size)
+        neg_emb = self.item_embedding(neg_item)  # (batch, seq_len, embed_size)
+    
+        pos_scores = (output * pos_emb).sum(dim=-1)  # (batch, seq_len)
+        neg_scores = (output * neg_emb).sum(dim=-1)  # (batch, seq_len)
+    
+        loss = -torch.log(torch.sigmoid(pos_scores - neg_scores))  # (batch, seq_len)
+    
+        # Mask for padding positions
+        mask = (item_seq > 0).float()  # (batch, seq_len)
+        loss = loss * mask
+    
+        # Average over non-padding positions
+        return loss.sum() / mask.sum()
 
     def full_sort_predict(self, interaction):
         item_seq = interaction['item_seq']
@@ -56,3 +64,4 @@ class GRU4Rec(BaseSequentialModel):
         test_items_emb = self.item_embedding.weight
         scores = torch.matmul(seq_output, test_items_emb.transpose(0, 1))
         return scores
+
