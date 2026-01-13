@@ -5,7 +5,7 @@ class BaseSequentialModel(nn.Module):
         super().__init__()
         self.num_items = config['num_items']
         self.embedding_size = config['embedding_size']
-        self.max_seq_len = config['max_seq_len']
+        self.max_seq_len = config.get('max_seq_len', None)
         self.device = config['device']
         self.loss_type = config['loss_type']
 
