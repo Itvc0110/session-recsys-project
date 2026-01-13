@@ -143,7 +143,7 @@ class SASRec(BaseSequentialModel):
         return output.gather(dim=1, index=gather_index).squeeze(1)
 
     def forward(self, item_seq, item_seq_len):
-        position_ids = torch.arange(item_seq.size(1), dtype=torch.long, device=item_seq.device).unsqueeze(0)
+        position_ids = torch.arange(item_seq.size(1), dtype=torch.long, device=self.device).unsqueeze(0)
         position_embedding = self.position_embedding(position_ids)
 
         item_emb = self.item_embedding(item_seq)
