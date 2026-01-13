@@ -1,7 +1,7 @@
 import argparse
 import yaml
 import importlib
-from data.datasets import SequentialDataset
+from data.datasets.datasets import SequentialDataset
 from data.utils import create_dataloader
 from src.evaluators import Evaluator
 from src.helpers import load_checkpoint
@@ -22,7 +22,15 @@ def main():
 
     config['device'] = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    dataset = SequentialDataset(config['data_path'], config['sep'])
+    dataset_module = importlib.import_module(f"data.datasets.{args.dataset}")
+    dataset_class = getattr(dataset_module, "SequentialDataset")
+    dataset = dataset_class(
+        config['data_path'],
+        config.get('sep', '::'),
+        config['max_seq_len'],
+        config['min_interactions']
+    )
+    
     _, _, test_seqs = dataset.split()
     test_dl = create_dataloader(test_seqs, config['batch_size'], False, dataset.num_items, config['neg_samples'])
 
