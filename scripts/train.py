@@ -6,7 +6,6 @@ from data.datasets import SequentialDataset  # Assume generalized
 from data.utils import create_dataloader
 from src.trainers import Trainer
 from src.evaluators import Evaluator
-from scripts.hyper_tune import hyper_tune  # Now integrated
 
 def main():
     parser = argparse.ArgumentParser()
@@ -27,9 +26,6 @@ def main():
     if args.batch_size: config['batch_size'] = args.batch_size
     if args.epochs: config['epochs'] = args.epochs
 
-    if args.tune:
-        hyper_tune(config, args.model, args.dataset) 
-        return
 
     dataset_module = importlib.import_module(f"data.datasets.{args.dataset}")
     dataset_class = getattr(dataset_module, "SequentialDataset")
