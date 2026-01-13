@@ -22,7 +22,9 @@ class SequentialDataset(Dataset):
         self.sequences = {}
         grouped = data.groupby('user_id')
         for user, group in grouped:
-            seq = group['item_id'].tolist()[-max_seq_len:]
+            seq = group['item_id'].tolist()
+            if max_seq_len is not None:
+                seq = seq[-max_seq_len:]
             self.sequences[user] = seq
         
         self.users = list(self.sequences.keys())

@@ -29,7 +29,7 @@ def main():
 
     dataset_module = importlib.import_module(f"data.datasets.{args.dataset}")
     dataset_class = getattr(dataset_module, "SequentialDataset")
-    dataset = dataset_class(config['data_path'], config.get('sep', ','), config['max_seq_len'], config['min_interactions'])
+    dataset = dataset_class(config['data_path'], config.get('sep', ','), config.get('max_seq_len', None), config['min_interactions'])
 
     train_seqs, valid_seqs, test_seqs = dataset.split()
     train_dl = create_dataloader(train_seqs, config['batch_size'], True, dataset.num_items, config['neg_samples'])
