@@ -1,7 +1,7 @@
 import argparse
 import yaml
 import importlib
-from data.datasets.ml1m import SequentialDataset
+from data.datasets import SequentialDataset
 from data.utils import create_dataloader
 from src.evaluators import Evaluator
 from src.helpers import load_checkpoint
@@ -11,7 +11,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=str, required=True)
     parser.add_argument('--dataset', type=str, default='ml1m')
-    parser.add_argument('--checkpoint', type=str, default='experiments/checkpoints/sasrec_model.pth')
+    parser.add_argument('--checkpoint', type=str, default='experiments/checkpoints/model.pth')
     args = parser.parse_args()
 
     with open(f'configs/{args.dataset}/{args.model}.yaml', 'r') as f:
@@ -39,7 +39,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-

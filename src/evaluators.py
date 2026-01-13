@@ -4,7 +4,7 @@ import torch
 class Evaluator:
     def __init__(self, config):
         self.metrics = config['eval_metrics']
-        self.k = 10
+        self.k_values = config['eval_k_values']
 
     def evaluate(self, dataloader, model):
         results = {}
@@ -15,20 +15,20 @@ class Evaluator:
                 interaction = {k: v.to(model.device) for k, v in batch.items()}
                 preds = model.full_sort_predict(interaction)
                 all_preds.append(preds)
-                # Extract the last non-padded target per sample
-                lengths = interaction['item_seq_len']  # (batch_size,)
-                last_pos = interaction['pos_item'].gather(1, (lengths - 1).unsqueeze(1)).squeeze(1)  # (batch_size,)
+                lengths = interaction['item_seq_len']
+                last_pos = interaction['pos_item'].gather(1, (lengths - 1).unsqueeze(1)).squeeze(1)
                 all_labels.append(last_pos)
         preds = torch.cat(all_preds)
         labels = torch.cat(all_labels)
 
-        # Config-driven: exact match
         for metric in self.metrics:
-            if metric == 'Hit@10':
-                results[metric] = hit_at_k(preds, labels, self.k)
-            elif metric == 'NDCG@10':
-                results[metric] = ndcg_at_k(preds, labels, self.k)
-            elif metric == 'MRR@10':
-                results[metric] = mrr_at_k(preds, labels, self.k)
+            for k in self.k_values:
+                key = f"{metric}@{k}"
+                if metric == 'Hit':
+                    results[key] = hit_at_k(preds, labels, k)
+                elif metric == 'NDCG':
+                    results[key] = ndcg_at_k(preds, labels, k)
+                elif metric == 'MRR':
+                    results[key] = mrr_at_k(preds, labels, k)
 
         return results
