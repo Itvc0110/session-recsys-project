@@ -9,7 +9,7 @@ def hyper_tune(config, model, dataset):
     }
     best_score = -float('inf')
     best_params = {}
-    for lr, dropout, bs in itertools.product(params['learning_rate'], params['dropout_prob']):
+    for lr, dropout in itertools.product(params['learning_rate'], params['dropout_prob']):
         print(f"Tuning with lr={lr}, dropout={dropout}")
         result = subprocess.run(['python', 'scripts/train.py', '--model', model, '--dataset', dataset, '--batch_size', str(bs), '--epochs', str(config['epochs'])], capture_output=True)
         output = result.stdout.decode()
