@@ -4,7 +4,7 @@ from torch.utils.data import Dataset
 from data.preprocess import apply_5core_filtering, remove_duplicates, sort_by_timestamp
 
 class SequentialDataset(Dataset):
-    def __init__(self, data_path, sep='::', max_seq_len=200, min_interactions=5):
+    def __init__(self, data_path, sep='::', max_seq_len=200, min_interactions=7):
         data = pd.read_csv(data_path, sep=sep, names=['user_id', 'item_id', 'rating', 'timestamp'], engine='python')
         data = data[data['rating'] > 0]  # Binarize implicit
         data = remove_duplicates(data)
