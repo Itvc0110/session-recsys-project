@@ -16,7 +16,7 @@ def main():
 
     with open(f'configs/{args.dataset}/{args.model}.yaml', 'r') as f:
         config = yaml.safe_load(f)
-    with open('configs/base.yaml', 'r') as f:
+    with open(f'configs/{args.dataset}/base.yaml', 'r') as f:
         base_config = yaml.safe_load(f)
     config.update(base_config)
 

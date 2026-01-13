@@ -1,6 +1,5 @@
+model: 'sasrec'
 max_seq_len: 200
-data_path: 'data/raw/ml-1m/ratings.dat'
-sep: '::'
 heads: 1  
 inner_size: 200
 num_layers: 2

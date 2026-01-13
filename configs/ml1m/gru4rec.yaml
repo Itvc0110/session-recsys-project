@@ -1,7 +1,4 @@
 model: 'gru4rec'
-dataset: 'ml1m'
-data_path: 'data/raw/ml-1m/ratings.dat'
-sep: '::'
 num_layers: 1
 hidden_size: 100
-dropout_prob: 0.5
+dropout_prob: 0.3

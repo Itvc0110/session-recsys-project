@@ -1,0 +1,4 @@
+model: 'gru4rec'
+num_layers: 1
+hidden_size: 100
+dropout_prob: 0.3
