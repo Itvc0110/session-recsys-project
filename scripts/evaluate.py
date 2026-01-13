@@ -1,7 +1,7 @@
 import argparse
 import yaml
 import importlib
-from data.datasets.base_dataset import SequentialDataset
+from data.datasets.base_dataset import BaseSequentialDataset
 from data.utils import create_dataloader
 from src.evaluators import Evaluator
 from src.helpers import load_checkpoint
