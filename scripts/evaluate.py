@@ -1,7 +1,7 @@
 import argparse
 import yaml
 import importlib
-from data.datasets.datasets import SequentialDataset
+from data.datasets.base_dataset import SequentialDataset
 from data.utils import create_dataloader
 from src.evaluators import Evaluator
 from src.helpers import load_checkpoint
@@ -30,7 +30,7 @@ def main():
         config['max_seq_len'],
         config['min_interactions']
     )
-    
+
     _, _, test_seqs = dataset.split()
     test_dl = create_dataloader(test_seqs, config['batch_size'], False, dataset.num_items, config['neg_samples'])
 

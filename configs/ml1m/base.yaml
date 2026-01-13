@@ -1,3 +1,0 @@
-max_seq_len: 200
-data_path: 'data/raw/ml-1m/ratings.dat'
-sep: '::'

@@ -2,7 +2,7 @@ import argparse
 import yaml
 import importlib
 import torch
-from data.datasets.datasets import SequentialDataset  # Assume generalized
+from data.datasets.base_dataset import SequentialDataset  # Assume generalized
 from data.utils import create_dataloader
 from src.trainers import Trainer
 from src.evaluators import Evaluator
