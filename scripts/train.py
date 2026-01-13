@@ -16,7 +16,7 @@ def main():
     parser.add_argument('--tune', action='store_true')  
     args = parser.parse_args()
 
-    with open('configs/base.yaml', 'r') as f:
+    with open(f'configs/{args.dataset}/base.yaml', 'r') as f:
         config = yaml.safe_load(f)
     with open(f'configs/{args.dataset}/{args.model}.yaml', 'r') as f:
         specific_config = yaml.safe_load(f)
